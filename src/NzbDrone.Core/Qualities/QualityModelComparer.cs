@@ -72,7 +72,8 @@ namespace NzbDrone.Core.Qualities
 
         public static List<int> GetIndicies(List<CustomFormat> formats, Profile profile)
         {
-            return formats.WithNone().Select(f => profile.FormatItems.FindIndex(v => Equals(v.Format, f))).ToList();
+            var allFormats = formats.Any() ? formats : new List<CustomFormat> { CustomFormat.None };
+            return allFormats.Select(f => profile.FormatItems.FindIndex(v => Equals(v.Format, f))).ToList();
         }
     }
 }

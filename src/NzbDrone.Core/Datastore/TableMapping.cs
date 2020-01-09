@@ -107,7 +107,7 @@ namespace NzbDrone.Core.Datastore
                   .Ignore(d => d.GroupName)
                   .Ignore(d => d.Weight);
 
-            Mapper.Entity<CustomFormatDefinition>("CustomFormats").RegisterModel();
+            Mapper.Entity<CustomFormat>("CustomFormats").RegisterModel();
 
             Mapper.Entity<Profile>("Profiles").RegisterModel();
             Mapper.Entity<Log>("Logs").RegisterModel();

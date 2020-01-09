@@ -9,9 +9,7 @@ namespace NzbDrone.Core.Datastore.Converters
     {
         public override CustomFormat Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            var val = reader.GetInt32();
-
-            return val == 0 ? CustomFormat.None : CustomFormatService.AllCustomFormats[val];
+            return new CustomFormat { Id = reader.GetInt32() };
         }
 
         public override void Write(Utf8JsonWriter writer, CustomFormat value, JsonSerializerOptions options)

@@ -207,9 +207,7 @@ namespace NzbDrone.Core.Profiles
         public Profile GetDefaultProfile(string name, Quality cutoff = null, params Quality[] allowed)
         {
             var groupedQualites = Quality.DefaultQualityDefinitions.GroupBy(q => q.Weight);
-            var formats = _formatService.All();
             var items = new List<ProfileQualityItem>();
-            var formatItems = new List<ProfileFormatItem>();
             var groupId = 1000;
             var profileCutoff = cutoff == null ? Quality.Unknown.Id : cutoff.Id;
 
@@ -245,15 +243,20 @@ namespace NzbDrone.Core.Profiles
                 groupId++;
             }
 
-            foreach (var format in formats)
+            var formatItems = new List<ProfileFormatItem>
             {
-                formatItems.Add(new ProfileFormatItem
+                new ProfileFormatItem
                 {
-                    Id = format.Id,
-                    Format = format,
-                    Allowed = false
-                });
-            }
+                    Id = 0,
+                    Allowed = true,
+                    Format = CustomFormat.None
+                }
+            }.Concat(_formatService.All().Select(format => new ProfileFormatItem
+            {
+                Id = format.Id,
+                Allowed = false,
+                Format = format
+            })).ToList();
 
             var qualityProfile = new Profile
             {
@@ -262,18 +265,8 @@ namespace NzbDrone.Core.Profiles
                 Items = items,
                 Language = Language.English,
                 FormatCutoff = CustomFormat.None.Id,
-                FormatItems = new List<ProfileFormatItem>
-                {
-                    new ProfileFormatItem
-                    {
-                        Id = 0,
-                        Allowed = true,
-                        Format = CustomFormat.None
-                    }
-                }
+                FormatItems = formatItems
             };
-
-            qualityProfile.FormatItems.AddRange(formatItems);
 
             return qualityProfile;
         }

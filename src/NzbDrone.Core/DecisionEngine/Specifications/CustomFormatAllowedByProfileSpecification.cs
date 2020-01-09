@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using NLog;
 using NzbDrone.Common.Extensions;
@@ -21,7 +22,7 @@ namespace NzbDrone.Core.DecisionEngine.Specifications
 
         public virtual Decision IsSatisfiedBy(RemoteMovie subject, SearchCriteriaBase searchCriteria)
         {
-            var formats = subject.CustomFormats.WithNone();
+            var formats = subject.CustomFormats.Any() ? subject.CustomFormats : new List<CustomFormat> { CustomFormat.None };
             _logger.Debug("Checking if report meets custom format requirements. {0}", formats.ConcatToString());
             var notAllowedFormats = subject.Movie.Profile.FormatItems.Where(v => v.Allowed == false).Select(f => f.Format).ToList();
             var notWantedFormats = notAllowedFormats.Intersect(formats);
