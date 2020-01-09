@@ -1,9 +1,11 @@
 using System;
+using System.Collections.Generic;
 using FizzWare.NBuilder;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using NzbDrone.Core.Configuration;
+using NzbDrone.Core.CustomFormats;
 using NzbDrone.Core.DecisionEngine.Specifications;
 using NzbDrone.Core.DecisionEngine.Specifications.RssSync;
 using NzbDrone.Core.History;
@@ -42,7 +44,8 @@ namespace NzbDrone.Core.Test.DecisionEngineTests
             _parseResultSingle = new RemoteMovie
             {
                 Movie = _fakeMovie,
-                ParsedMovieInfo = new ParsedMovieInfo { Quality = new QualityModel(Quality.DVD, new Revision(version: 2)) }
+                ParsedMovieInfo = new ParsedMovieInfo { Quality = new QualityModel(Quality.DVD, new Revision(version: 2)) },
+                CustomFormats = new List<CustomFormat>()
             };
 
             _upgradableQuality = new QualityModel(Quality.SDTV, new Revision(version: 1));
@@ -145,6 +148,10 @@ namespace NzbDrone.Core.Test.DecisionEngineTests
             _fakeMovie.Profile = new Profile { Cutoff = Quality.Bluray1080p.Id, Items = Qualities.QualityFixture.GetDefaultQualities() };
             _parseResultSingle.ParsedMovieInfo.Quality = new QualityModel(Quality.WEBDL1080p, new Revision(version: 1));
             _upgradableQuality = new QualityModel(Quality.WEBDL1080p, new Revision(version: 1));
+
+            Mocker.GetMock<ICustomFormatCalculationService>()
+                .Setup(x => x.ParseCustomFormat(It.IsAny<History.History>()))
+                .Returns(new List<CustomFormat>());
 
             GivenMostRecentForEpisode(FIRST_EPISODE_ID, string.Empty, _upgradableQuality, DateTime.UtcNow, HistoryEventType.Grabbed);
 

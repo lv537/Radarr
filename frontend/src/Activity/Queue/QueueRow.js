@@ -71,6 +71,7 @@ class QueueRow extends Component {
       errorMessage,
       movie,
       quality,
+      customFormats,
       languages,
       protocol,
       indexer,
@@ -168,11 +169,11 @@ class QueueRow extends Component {
               );
             }
 
-            if (name === 'quality.customFormats') {
+            if (name === 'customFormats') {
               return (
                 <TableRowCell key={name}>
                   <MovieFormats
-                    formats={quality.customFormats}
+                    formats={customFormats}
                   />
                 </TableRowCell>
               );
@@ -320,6 +321,7 @@ QueueRow.propTypes = {
   errorMessage: PropTypes.string,
   movie: PropTypes.object,
   quality: PropTypes.object.isRequired,
+  customFormats: PropTypes.arrayOf(PropTypes.object),
   languages: PropTypes.arrayOf(PropTypes.object).isRequired,
   protocol: PropTypes.string.isRequired,
   indexer: PropTypes.string,

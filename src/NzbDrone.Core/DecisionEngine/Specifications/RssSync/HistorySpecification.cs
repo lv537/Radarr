@@ -2,6 +2,7 @@ using System;
 using NLog;
 using NzbDrone.Common.Extensions;
 using NzbDrone.Core.Configuration;
+using NzbDrone.Core.CustomFormats;
 using NzbDrone.Core.History;
 using NzbDrone.Core.IndexerSearch.Definitions;
 using NzbDrone.Core.Parser.Model;
@@ -12,16 +13,19 @@ namespace NzbDrone.Core.DecisionEngine.Specifications.RssSync
     {
         private readonly IHistoryService _historyService;
         private readonly UpgradableSpecification _qualityUpgradableSpecification;
+        private readonly ICustomFormatCalculationService _formatService;
         private readonly IConfigService _configService;
         private readonly Logger _logger;
 
         public HistorySpecification(IHistoryService historyService,
-                                           UpgradableSpecification qualityUpgradableSpecification,
-                                           IConfigService configService,
-                                           Logger logger)
+                                    UpgradableSpecification qualityUpgradableSpecification,
+                                    ICustomFormatCalculationService formatService,
+                                    IConfigService configService,
+                                    Logger logger)
         {
             _historyService = historyService;
             _qualityUpgradableSpecification = qualityUpgradableSpecification;
+            _formatService = formatService;
             _configService = configService;
             _logger = logger;
         }
@@ -46,8 +50,15 @@ namespace NzbDrone.Core.DecisionEngine.Specifications.RssSync
             if (mostRecent != null && mostRecent.EventType == HistoryEventType.Grabbed)
             {
                 var recent = mostRecent.Date.After(DateTime.UtcNow.AddHours(-12));
-                var cutoffUnmet = _qualityUpgradableSpecification.CutoffNotMet(subject.Movie.Profile, mostRecent.Quality, subject.ParsedMovieInfo.Quality);
-                var upgradeable = _qualityUpgradableSpecification.IsUpgradable(subject.Movie.Profile, mostRecent.Quality, subject.ParsedMovieInfo.Quality);
+                var cutoffUnmet = _qualityUpgradableSpecification.CutoffNotMet(subject.Movie.Profile,
+                                                                               mostRecent.Quality,
+                                                                               subject.ParsedMovieInfo.Quality);
+
+                var upgradeable = _qualityUpgradableSpecification.IsUpgradable(subject.Movie.Profile,
+                                                                               mostRecent.Quality,
+                                                                               _formatService.ParseCustomFormat(mostRecent),
+                                                                               subject.ParsedMovieInfo.Quality,
+                                                                               subject.CustomFormats);
 
                 if (!recent && cdhEnabled)
                 {

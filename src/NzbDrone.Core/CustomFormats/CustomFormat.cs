@@ -73,11 +73,6 @@ namespace NzbDrone.Core.CustomFormats
 
     public static class CustomFormatExtensions
     {
-        public static string ToExtendedString(this IEnumerable<CustomFormat> formats)
-        {
-            return string.Join(", ", formats.Select(f => f.ToString()));
-        }
-
         public static List<CustomFormat> WithNone(this IEnumerable<CustomFormat> formats)
         {
             var list = formats.ToList();

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using NzbDrone.Core.CustomFormats;
 using NzbDrone.Core.DecisionEngine.Specifications;
 using NzbDrone.Core.Languages;
 using NzbDrone.Core.MediaFiles;
@@ -18,6 +19,7 @@ namespace Radarr.Api.V3.MovieFiles
         public DateTime DateAdded { get; set; }
         public string SceneName { get; set; }
         public QualityModel Quality { get; set; }
+        public List<CustomFormat> CustomFormats { get; set; }
         public MediaInfoResource MediaInfo { get; set; }
         public bool QualityCutoffNotMet { get; set; }
         public List<Language> Languages { get; set; }

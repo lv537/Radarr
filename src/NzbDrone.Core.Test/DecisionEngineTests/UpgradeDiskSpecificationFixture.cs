@@ -1,7 +1,10 @@
 using System;
+using System.Collections.Generic;
 using FizzWare.NBuilder;
 using FluentAssertions;
+using Moq;
 using NUnit.Framework;
+using NzbDrone.Core.CustomFormats;
 using NzbDrone.Core.DecisionEngine.Specifications;
 using NzbDrone.Core.MediaFiles;
 using NzbDrone.Core.Movies;
@@ -38,6 +41,7 @@ namespace NzbDrone.Core.Test.DecisionEngineTests
             {
                 Movie = fakeSeries,
                 ParsedMovieInfo = new ParsedMovieInfo() { Quality = new QualityModel(Quality.DVD, new Revision(version: 2)) },
+                CustomFormats = new List<CustomFormat>()
             };
         }
 
@@ -63,6 +67,10 @@ namespace NzbDrone.Core.Test.DecisionEngineTests
         [Test]
         public void should_not_be_upgradable_if_qualities_are_the_same()
         {
+            Mocker.GetMock<ICustomFormatCalculationService>()
+                .Setup(x => x.ParseCustomFormat(It.IsAny<MovieFile>()))
+                .Returns(new List<CustomFormat>());
+
             _firstFile.Quality = new QualityModel(Quality.WEBDL1080p);
             _parseResultSingle.ParsedMovieInfo.Quality = new QualityModel(Quality.WEBDL1080p);
             _upgradeDisk.IsSatisfiedBy(_parseResultSingle, null).Accepted.Should().BeFalse();

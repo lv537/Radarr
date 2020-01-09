@@ -143,11 +143,10 @@ namespace NzbDrone.Core.Datastore
             SqlMapper.RemoveTypeMap(typeof(DateTime));
             SqlMapper.AddTypeHandler(new DapperUtcConverter());
             SqlMapper.AddTypeHandler(new DapperQualityIntConverter());
-            SqlMapper.AddTypeHandler(new DapperCustomFormatIntConverter());
             SqlMapper.AddTypeHandler(new EmbeddedDocumentConverter<List<ProfileQualityItem>>(new QualityIntConverter()));
             SqlMapper.AddTypeHandler(new EmbeddedDocumentConverter<List<ProfileFormatItem>>(new CustomFormatIntConverter()));
             SqlMapper.AddTypeHandler(new EmbeddedDocumentConverter<List<FormatTag>>(new QualityTagStringConverter()));
-            SqlMapper.AddTypeHandler(new EmbeddedDocumentConverter<QualityModel>(new CustomFormatIntConverter(), new QualityIntConverter()));
+            SqlMapper.AddTypeHandler(new EmbeddedDocumentConverter<QualityModel>(new QualityIntConverter()));
             SqlMapper.AddTypeHandler(new EmbeddedDocumentConverter<Dictionary<string, string>>());
             SqlMapper.AddTypeHandler(new EmbeddedDocumentConverter<IDictionary<string, string>>());
             SqlMapper.AddTypeHandler(new EmbeddedDocumentConverter<List<int>>());

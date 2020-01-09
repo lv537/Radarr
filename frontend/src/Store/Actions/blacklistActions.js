@@ -51,9 +51,9 @@ export const defaultState = {
       isVisible: true
     },
     {
-      name: 'quality.customFormats',
+      name: 'customFormats',
       label: 'Custom Formats',
-      isSortable: true,
+      isSortable: false,
       isVisible: true
     },
     {

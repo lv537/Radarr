@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using NzbDrone.Core.CustomFormats;
 using NzbDrone.Core.Download.TrackedDownloads;
 using NzbDrone.Core.Indexers;
 using NzbDrone.Core.Languages;
@@ -16,6 +17,7 @@ namespace Radarr.Api.V3.Queue
         public MovieResource Movie { get; set; }
         public List<Language> Languages { get; set; }
         public QualityModel Quality { get; set; }
+        public List<CustomFormat> CustomFormats { get; set; }
         public decimal Size { get; set; }
         public string Title { get; set; }
         public decimal Sizeleft { get; set; }
@@ -48,6 +50,7 @@ namespace Radarr.Api.V3.Queue
                 Movie = includeMovie && model.Movie != null ? model.Movie.ToResource() : null,
                 Languages = model.Languages,
                 Quality = model.Quality,
+                CustomFormats = model.RemoteMovie?.CustomFormats,
                 Size = model.Size,
                 Title = model.Title,
                 Sizeleft = model.Sizeleft,

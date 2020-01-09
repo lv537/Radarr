@@ -1,6 +1,8 @@
-﻿using FluentAssertions;
+﻿using System.Collections.Generic;
+using FluentAssertions;
 using NUnit.Framework;
 using NzbDrone.Core.Configuration;
+using NzbDrone.Core.CustomFormats;
 using NzbDrone.Core.DecisionEngine.Specifications;
 using NzbDrone.Core.Profiles;
 using NzbDrone.Core.Qualities;
@@ -43,7 +45,11 @@ namespace NzbDrone.Core.Test.DecisionEngineTests
 
             var profile = new Profile { Items = Qualities.QualityFixture.GetDefaultQualities() };
 
-            Subject.IsUpgradable(profile, new QualityModel(current, new Revision(version: currentVersion)), new QualityModel(newQuality, new Revision(version: newVersion)))
+            Subject.IsUpgradable(profile,
+                                 new QualityModel(current, new Revision(version: currentVersion)),
+                                 new List<CustomFormat>(),
+                                 new QualityModel(newQuality, new Revision(version: newVersion)),
+                                 new List<CustomFormat>())
                     .Should().Be(expected);
         }
 
@@ -54,7 +60,11 @@ namespace NzbDrone.Core.Test.DecisionEngineTests
 
             var profile = new Profile { Items = Qualities.QualityFixture.GetDefaultQualities() };
 
-            Subject.IsUpgradable(profile, new QualityModel(Quality.DVD, new Revision(version: 2)), new QualityModel(Quality.DVD, new Revision(version: 1)))
+            Subject.IsUpgradable(profile,
+                                 new QualityModel(Quality.DVD, new Revision(version: 2)),
+                                 new List<CustomFormat>(),
+                                 new QualityModel(Quality.DVD, new Revision(version: 1)),
+                                 new List<CustomFormat>())
                     .Should().BeFalse();
         }
 
@@ -69,7 +79,9 @@ namespace NzbDrone.Core.Test.DecisionEngineTests
             Subject.IsUpgradable(
                        profile,
                        new QualityModel(Quality.HDTV720p, new Revision(version: 1)),
-                       new QualityModel(Quality.HDTV720p, new Revision(version: 1)))
+                       new List<CustomFormat>(),
+                       new QualityModel(Quality.HDTV720p, new Revision(version: 1)),
+                       new List<CustomFormat>())
                    .Should().BeFalse();
         }
     }

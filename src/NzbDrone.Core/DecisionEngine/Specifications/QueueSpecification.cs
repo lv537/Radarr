@@ -13,8 +13,8 @@ namespace NzbDrone.Core.DecisionEngine.Specifications
         private readonly Logger _logger;
 
         public QueueSpecification(IQueueService queueService,
-                                       UpgradableSpecification qualityUpgradableSpecification,
-                                       Logger logger)
+                                  UpgradableSpecification qualityUpgradableSpecification,
+                                  Logger logger)
         {
             _queueService = queueService;
             _qualityUpgradableSpecification = qualityUpgradableSpecification;
@@ -45,7 +45,11 @@ namespace NzbDrone.Core.DecisionEngine.Specifications
 
                 _logger.Debug("Checking if release is higher quality than queued release. Queued quality is: {0}", remoteMovie.ParsedMovieInfo.Quality);
 
-                if (!_qualityUpgradableSpecification.IsUpgradable(qualityProfile, remoteMovie.ParsedMovieInfo.Quality, subject.ParsedMovieInfo.Quality))
+                if (!_qualityUpgradableSpecification.IsUpgradable(qualityProfile,
+                                                                  remoteMovie.ParsedMovieInfo.Quality,
+                                                                  remoteMovie.CustomFormats,
+                                                                  subject.ParsedMovieInfo.Quality,
+                                                                  subject.CustomFormats))
                 {
                     return Decision.Reject("Quality for release in queue is of equal or higher preference: {0}", remoteMovie.ParsedMovieInfo.Quality);
                 }

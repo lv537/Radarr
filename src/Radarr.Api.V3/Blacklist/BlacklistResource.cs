@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using NzbDrone.Core.CustomFormats;
 using NzbDrone.Core.Indexers;
 using NzbDrone.Core.Languages;
 using NzbDrone.Core.Qualities;
@@ -14,6 +15,7 @@ namespace Radarr.Api.V3.Blacklist
         public string SourceTitle { get; set; }
         public List<Language> Languages { get; set; }
         public QualityModel Quality { get; set; }
+        public List<CustomFormat> CustomFormats { get; set; }
         public DateTime Date { get; set; }
         public DownloadProtocol Protocol { get; set; }
         public string Indexer { get; set; }
@@ -24,7 +26,7 @@ namespace Radarr.Api.V3.Blacklist
 
     public static class BlacklistResourceMapper
     {
-        public static BlacklistResource MapToResource(this NzbDrone.Core.Blacklisting.Blacklist model)
+        public static BlacklistResource MapToResource(this NzbDrone.Core.Blacklisting.Blacklist model, ICustomFormatCalculationService formatCalculator)
         {
             if (model == null)
             {
@@ -39,6 +41,7 @@ namespace Radarr.Api.V3.Blacklist
                 SourceTitle = model.SourceTitle,
                 Languages = model.Languages,
                 Quality = model.Quality,
+                CustomFormats = formatCalculator.ParseCustomFormat(model),
                 Date = model.Date,
                 Protocol = model.Protocol,
                 Indexer = model.Indexer,

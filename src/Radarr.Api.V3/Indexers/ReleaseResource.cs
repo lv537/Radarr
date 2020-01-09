@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
+using NzbDrone.Core.CustomFormats;
 using NzbDrone.Core.DecisionEngine;
 using NzbDrone.Core.Indexers;
 using NzbDrone.Core.Languages;
@@ -15,6 +16,7 @@ namespace Radarr.Api.V3.Indexers
     {
         public string Guid { get; set; }
         public QualityModel Quality { get; set; }
+        public List<CustomFormat> CustomFormats { get; set; }
         public int QualityWeight { get; set; }
         public int Age { get; set; }
         public double AgeHours { get; set; }
@@ -68,6 +70,7 @@ namespace Radarr.Api.V3.Indexers
             {
                 Guid = releaseInfo.Guid,
                 Quality = parsedMovieInfo.Quality,
+                CustomFormats = remoteMovie.CustomFormats,
 
                 //QualityWeight
                 Age = releaseInfo.Age,

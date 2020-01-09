@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using NzbDrone.Core.Configuration;
-using NzbDrone.Core.CustomFormats;
 using NzbDrone.Core.Indexers;
 using NzbDrone.Core.Parser.Model;
 using NzbDrone.Core.Profiles.Delay;
@@ -70,14 +69,14 @@ namespace NzbDrone.Core.DecisionEngine
 
         private int CompareCustomFormats(DownloadDecision x, DownloadDecision y)
         {
-            var left = x.RemoteMovie.ParsedMovieInfo.Quality.CustomFormats.WithNone();
-            var right = y.RemoteMovie.ParsedMovieInfo.Quality.CustomFormats;
+            var left = x.RemoteMovie.CustomFormats;
+            var right = y.RemoteMovie.CustomFormats;
 
             var leftIndicies = QualityModelComparer.GetIndicies(left, x.RemoteMovie.Movie.Profile);
-            var rightIndicies =  QualityModelComparer.GetIndicies(right, y.RemoteMovie.Movie.Profile);
+            var rightIndicies = QualityModelComparer.GetIndicies(right, y.RemoteMovie.Movie.Profile);
 
-            var leftTotal = leftIndicies.Sum();
-            var rightTotal = rightIndicies.Sum();
+            var leftTotal = leftIndicies.Select(i => Math.Pow(2, i)).Sum();
+            var rightTotal = rightIndicies.Select(i => Math.Pow(2, i)).Sum();
 
             return leftTotal.CompareTo(rightTotal);
         }

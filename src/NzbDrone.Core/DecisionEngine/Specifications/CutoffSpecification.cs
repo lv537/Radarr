@@ -1,17 +1,26 @@
+using System.Collections.Generic;
+using System.Linq;
 using NLog;
+using NzbDrone.Common.Extensions;
+using NzbDrone.Core.CustomFormats;
 using NzbDrone.Core.IndexerSearch.Definitions;
 using NzbDrone.Core.Parser.Model;
+using NzbDrone.Core.Qualities;
 
 namespace NzbDrone.Core.DecisionEngine.Specifications
 {
     public class CutoffSpecification : IDecisionEngineSpecification
     {
         private readonly UpgradableSpecification _qualityUpgradableSpecification;
+        private readonly ICustomFormatCalculationService _formatService;
         private readonly Logger _logger;
 
-        public CutoffSpecification(UpgradableSpecification qualityUpgradableSpecification, Logger logger)
+        public CutoffSpecification(UpgradableSpecification qualityUpgradableSpecification,
+                                   ICustomFormatCalculationService formatService,
+                                   Logger logger)
         {
             _qualityUpgradableSpecification = qualityUpgradableSpecification;
+            _formatService = formatService;
             _logger = logger;
         }
 
@@ -21,17 +30,29 @@ namespace NzbDrone.Core.DecisionEngine.Specifications
         public virtual Decision IsSatisfiedBy(RemoteMovie subject, SearchCriteriaBase searchCriteria)
         {
             var profile = subject.Movie.Profile;
+            var file = subject.Movie.MovieFile;
 
-            if (subject.Movie.MovieFile != null)
+            if (file != null)
             {
                 if (!_qualityUpgradableSpecification.CutoffNotMet(profile,
-                                                                  subject.Movie.MovieFile.Quality,
+                                                                  file.Quality,
                                                                   subject.ParsedMovieInfo.Quality))
                 {
-                    var qualityCutoffIndex = profile.GetIndex(profile.Cutoff);
-                    var qualityCutoff = profile.Items[qualityCutoffIndex.Index];
+                    file.Movie = subject.Movie;
+                    var customFormats = _formatService.ParseCustomFormat(file);
+                    var cutoff = new List<CustomFormat> { profile.FormatItems.Single(x => x.Format.Id == profile.FormatCutoff).Format };
+                    var result = new QualityModelComparer(profile).Compare(cutoff, customFormats);
+                    if (result >= 0)
+                    {
+                        _logger.Debug("Existing custom formats {0} meet cutoff: {1}",
+                                      customFormats.ConcatToString(),
+                                      cutoff.ConcatToString());
 
-                    return Decision.Reject("Existing file meets cutoff: {0} - {1}", qualityCutoff, subject.Movie.Profile.Cutoff);
+                        var qualityCutoffIndex = profile.GetIndex(profile.Cutoff);
+                        var qualityCutoff = profile.Items[qualityCutoffIndex.Index];
+
+                        return Decision.Reject("Existing file meets cutoff: {0} - {1}", qualityCutoff, cutoff.ConcatToString());
+                    }
                 }
             }
 
