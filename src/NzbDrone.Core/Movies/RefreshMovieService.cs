@@ -5,8 +5,6 @@ using System.Linq;
 using NLog;
 using NzbDrone.Common.Extensions;
 using NzbDrone.Common.Instrumentation.Extensions;
-
-//using NzbDrone.Core.DataAugmentation.DailyMovie;
 using NzbDrone.Core.Configuration;
 using NzbDrone.Core.Exceptions;
 using NzbDrone.Core.MediaFiles;
@@ -26,7 +24,6 @@ namespace NzbDrone.Core.Movies
         private readonly IMovieService _movieService;
         private readonly IAlternativeTitleService _titleService;
         private readonly IEventAggregator _eventAggregator;
-        private readonly IManageCommandQueue _commandQueueManager;
         private readonly IDiskScanService _diskScanService;
         private readonly ICheckIfMovieShouldBeRefreshed _checkIfMovieShouldBeRefreshed;
         private readonly IConfigService _configService;
@@ -41,7 +38,6 @@ namespace NzbDrone.Core.Movies
                                     IDiskScanService diskScanService,
                                     IRadarrAPIClient apiClient,
                                     ICheckIfMovieShouldBeRefreshed checkIfMovieShouldBeRefreshed,
-                                    IManageCommandQueue commandQueue,
                                     IConfigService configService,
                                     Logger logger)
         {
@@ -50,7 +46,6 @@ namespace NzbDrone.Core.Movies
             _titleService = titleService;
             _eventAggregator = eventAggregator;
             _apiClient = apiClient;
-            _commandQueueManager = commandQueue;
             _diskScanService = diskScanService;
             _checkIfMovieShouldBeRefreshed = checkIfMovieShouldBeRefreshed;
             _configService = configService;
@@ -63,11 +58,11 @@ namespace NzbDrone.Core.Movies
 
             Movie movieInfo;
 
-            movieInfo = _movieInfo.GetMovieInfo(movie.TmdbId, movie.Profile, movie.HasPreDBEntry);
+            movieInfo = _movieInfo.GetMovieInfo(movie.TmdbId, movie.HasPreDBEntry);
 
             if (movie.TmdbId != movieInfo.TmdbId)
             {
-                _logger.Warn("Movie '{0}' (tvdbid {1}) was replaced with '{2}' (tvdbid {3}), because the original was a duplicate.", movie.Title, movie.TmdbId, movieInfo.Title, movieInfo.TmdbId);
+                _logger.Warn("Movie '{0}' (tmdbid {1}) was replaced with '{2}' (tmdbid {3}), because the original was a duplicate.", movie.Title, movie.TmdbId, movieInfo.Title, movieInfo.TmdbId);
                 movie.TmdbId = movieInfo.TmdbId;
             }
 

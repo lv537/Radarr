@@ -8,7 +8,7 @@ namespace NzbDrone.Core.MetadataSource
     public interface IProvideMovieInfo
     {
         Movie GetMovieInfo(string imdbId);
-        Movie GetMovieInfo(int tmdbId, Profile profile, bool hasPreDBEntry);
+        Movie GetMovieInfo(int tmdbId, bool hasPreDBEntry);
         HashSet<int> GetChangedMovies(DateTime startTime);
     }
 }

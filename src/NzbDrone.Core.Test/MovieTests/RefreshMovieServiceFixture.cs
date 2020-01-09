@@ -6,7 +6,6 @@ using NzbDrone.Core.Exceptions;
 using NzbDrone.Core.MetadataSource;
 using NzbDrone.Core.Movies;
 using NzbDrone.Core.Movies.Commands;
-using NzbDrone.Core.Profiles;
 using NzbDrone.Core.Test.Framework;
 using NzbDrone.Test.Common;
 
@@ -29,7 +28,7 @@ namespace NzbDrone.Core.Test.MovieTests
                   .Returns(_movie);
 
             Mocker.GetMock<IProvideMovieInfo>()
-                  .Setup(s => s.GetMovieInfo(It.IsAny<int>(), It.IsAny<Profile>(), false))
+                  .Setup(s => s.GetMovieInfo(It.IsAny<int>(), false))
                   .Callback<int>(p => { throw new MovieNotFoundException(p.ToString()); });
         }
 
@@ -41,7 +40,7 @@ namespace NzbDrone.Core.Test.MovieTests
         }
 
         [Test]
-        public void should_update_tvrage_id_if_changed()
+        public void should_update_imdb_id_if_changed()
         {
             var newSeriesInfo = _movie.JsonClone();
             newSeriesInfo.ImdbId = _movie.ImdbId + 1;

@@ -18,7 +18,6 @@ using NzbDrone.Core.Movies;
 using NzbDrone.Core.Movies.AlternativeTitles;
 using NzbDrone.Core.NetImport.ImportExclusions;
 using NzbDrone.Core.Parser;
-using NzbDrone.Core.Profiles;
 
 namespace NzbDrone.Core.MetadataSource.SkyHook
 {
@@ -32,7 +31,6 @@ namespace NzbDrone.Core.MetadataSource.SkyHook
         private readonly IMovieService _movieService;
         private readonly IPreDBService _predbService;
         private readonly IImportExclusionsService _exclusionService;
-        private readonly IAlternativeTitleService _altTitleService;
         private readonly IRadarrAPIClient _radarrAPI;
 
         public SkyHookProxy(IHttpClient httpClient,
@@ -41,7 +39,6 @@ namespace NzbDrone.Core.MetadataSource.SkyHook
             IMovieService movieService,
             IPreDBService predbService,
             IImportExclusionsService exclusionService,
-            IAlternativeTitleService altTitleService,
             IRadarrAPIClient radarrAPI,
             Logger logger)
         {
@@ -51,7 +48,6 @@ namespace NzbDrone.Core.MetadataSource.SkyHook
             _movieService = movieService;
             _predbService = predbService;
             _exclusionService = exclusionService;
-            _altTitleService = altTitleService;
             _radarrAPI = radarrAPI;
 
             _logger = logger;
@@ -76,9 +72,9 @@ namespace NzbDrone.Core.MetadataSource.SkyHook
             return new HashSet<int>(response.Resource.results.Select(c => c.id));
         }
 
-        public Movie GetMovieInfo(int tmdbId, Profile profile = null, bool hasPreDBEntry = false)
+        public Movie GetMovieInfo(int tmdbId, bool hasPreDBEntry = false)
         {
-            var langCode = profile != null ? IsoLanguages.Get(profile.Language)?.TwoLetterCode ?? "en" : "en";
+            var langCode = "en";
 
             var request = _movieBuilder.Create()
                .SetSegment("route", "movie")
@@ -138,15 +134,6 @@ namespace NzbDrone.Core.MetadataSource.SkyHook
 
             var movie = new Movie();
             var altTitles = new List<AlternativeTitle>();
-
-            if (langCode != "en")
-            {
-                var iso = IsoLanguages.Find(resource.original_language);
-                if (iso != null)
-                {
-                    altTitles.Add(new AlternativeTitle(resource.original_title, SourceType.TMDB, tmdbId, iso.Language));
-                }
-            }
 
             foreach (var alternativeTitle in resource.alternative_titles.titles)
             {
