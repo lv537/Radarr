@@ -104,7 +104,8 @@ namespace NzbDrone.Core.CustomFormats
                 ExtraInfo = new Dictionary<string, object>
                 {
                     { "IndexerFlags", file.IndexerFlags },
-                    { "Size", file.Size }
+                    { "Size", file.Size },
+                    { "Filename", System.IO.Path.GetFileName(file.RelativePath) }
                 }
             };
 

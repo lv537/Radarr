@@ -76,12 +76,14 @@ namespace NzbDrone.Core.CustomFormats
                 return false;
             }
 
+            var filename = (string)movieInfo?.ExtraInfo?.GetValueOrDefault("Filename");
+
             switch (TagType)
             {
                 case TagType.Edition:
                     return MatchString(movieInfo.Edition);
                 case TagType.Custom:
-                    return MatchString(movieInfo.SimpleReleaseTitle);
+                    return MatchString(movieInfo.SimpleReleaseTitle) || MatchString(filename);
                 case TagType.Language:
                     return movieInfo?.Languages?.Contains((Language)Value) ?? false;
                 case TagType.Resolution:
