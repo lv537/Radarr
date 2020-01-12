@@ -15,6 +15,11 @@ const columns = [
     name: 'language',
     label: 'Language',
     isVisible: true
+  },
+  {
+    name: 'sourceType',
+    label: 'Type',
+    isVisible: true
   }
 ];
 
