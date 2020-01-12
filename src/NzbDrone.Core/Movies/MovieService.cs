@@ -91,31 +91,6 @@ namespace NzbDrone.Core.Movies
 
         public Movie AddMovie(Movie newMovie)
         {
-            Ensure.That(newMovie, () => newMovie).IsNotNull();
-
-            MoviePathState defaultState = MoviePathState.Static;
-            if (!_configService.PathsDefaultStatic)
-            {
-                defaultState = MoviePathState.Dynamic;
-            }
-
-            if (string.IsNullOrWhiteSpace(newMovie.Path))
-            {
-                var folderName = _fileNameBuilder.GetMovieFolder(newMovie);
-                newMovie.Path = Path.Combine(newMovie.RootFolderPath, folderName);
-                newMovie.PathState = defaultState;
-            }
-            else
-            {
-                newMovie.PathState = defaultState == MoviePathState.Dynamic ? MoviePathState.StaticOnce : MoviePathState.Static;
-            }
-
-            _logger.Info("Adding Movie {0} Path: [{1}]", newMovie, newMovie.Path);
-
-            newMovie.CleanTitle = newMovie.Title.CleanSeriesTitle();
-            newMovie.SortTitle = MovieTitleNormalizer.Normalize(newMovie.Title, newMovie.TmdbId);
-            newMovie.Added = DateTime.UtcNow;
-
             _movieRepository.Insert(newMovie);
             _eventAggregator.PublishEvent(new MovieAddedEvent(GetMovie(newMovie.Id)));
 
@@ -124,44 +99,7 @@ namespace NzbDrone.Core.Movies
 
         public List<Movie> AddMovies(List<Movie> newMovies)
         {
-            newMovies.ForEach(m => Ensure.That(m, () => m).IsNotNull());
-
-            newMovies.ForEach(m =>
-            {
-                MoviePathState defaultState = MoviePathState.Static;
-                if (!_configService.PathsDefaultStatic)
-                {
-                    defaultState = MoviePathState.Dynamic;
-                }
-
-                if (string.IsNullOrWhiteSpace(m.Path))
-                {
-                    var folderName = _fileNameBuilder.GetMovieFolder(m);
-                    m.Path = Path.Combine(m.RootFolderPath, folderName);
-                    m.PathState = defaultState;
-                }
-                else
-                {
-                    m.PathState = defaultState == MoviePathState.Dynamic ? MoviePathState.StaticOnce : MoviePathState.Static;
-                }
-
-                m.CleanTitle = m.Title.CleanSeriesTitle();
-                m.SortTitle = MovieTitleNormalizer.Normalize(m.Title, m.TmdbId);
-                m.Added = DateTime.UtcNow;
-            });
-
-            var potentialMovieCount = newMovies.Count;
-
-            newMovies = newMovies.DistinctBy(movie => movie.TmdbId).ToList(); // Ensure we don't add the same movie twice
-
-            var existingMovies = FindByTmdbId(newMovies.Select(x => x.TmdbId).ToList());
-
-            newMovies = newMovies.ExceptBy(n => n.TmdbId, existingMovies, e => e.TmdbId, EqualityComparer<int>.Default).ToList(); // Ensure we don't add a movie that already exists
-
             _movieRepository.InsertMany(newMovies);
-
-            _logger.Debug("Adding {0} movies, {1} duplicates detected and skipped", newMovies.Count, potentialMovieCount - newMovies.Count);
-
             _eventAggregator.PublishEvent(new MoviesImportedEvent(newMovies.Select(s => s.Id).ToList()));
 
             return newMovies;

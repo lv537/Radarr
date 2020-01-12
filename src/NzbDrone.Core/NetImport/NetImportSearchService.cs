@@ -24,6 +24,7 @@ namespace NzbDrone.Core.NetImport
         private readonly Logger _logger;
         private readonly INetImportFactory _netImportFactory;
         private readonly IMovieService _movieService;
+        private readonly IAddMovieService _addMovieService;
         private readonly ISearchForNewMovie _movieSearch;
         private readonly IRootFolderService _rootFolder;
         private readonly IConfigService _configService;
@@ -33,6 +34,7 @@ namespace NzbDrone.Core.NetImport
 
         public NetImportSearchService(INetImportFactory netImportFactory,
                                       IMovieService movieService,
+                                      IAddMovieService addMovieService,
                                       ISearchForNewMovie movieSearch,
                                       IRootFolderService rootFolder,
                                       ISearchForNzb nzbSearchService,
@@ -43,6 +45,7 @@ namespace NzbDrone.Core.NetImport
         {
             _netImportFactory = netImportFactory;
             _movieService = movieService;
+            _addMovieService = addMovieService;
             _movieSearch = movieSearch;
             _nzbSearchService = nzbSearchService;
             _processDownloadDecisions = processDownloadDecisions;
@@ -163,7 +166,7 @@ namespace NzbDrone.Core.NetImport
                 _logger.Info($"Adding {moviesToAdd.Count()} movies from your auto enabled lists to library");
             }
 
-            _movieService.AddMovies(moviesToAdd);
+            _addMovieService.AddMovies(moviesToAdd);
         }
 
         private void CleanLibrary(List<Movie> movies)

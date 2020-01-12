@@ -27,12 +27,14 @@ namespace Radarr.Api.V3.Movies
                                 IHandle<MovieRenamedEvent>,
                                 IHandle<MediaCoversUpdatedEvent>
     {
-        protected readonly IMovieService _moviesService;
+        private readonly IMovieService _moviesService;
+        private readonly IAddMovieService _addMovieService;
         private readonly IMapCoversToLocal _coverMapper;
         private readonly IUpgradableSpecification _qualityUpgradableSpecification;
 
         public MovieModule(IBroadcastSignalRMessage signalRBroadcaster,
                             IMovieService moviesService,
+                            IAddMovieService addMovieService,
                             IMapCoversToLocal coverMapper,
                             IUpgradableSpecification qualityUpgradableSpecification,
                             RootFolderValidator rootFolderValidator,
@@ -44,6 +46,7 @@ namespace Radarr.Api.V3.Movies
             : base(signalRBroadcaster)
         {
             _moviesService = moviesService;
+            _addMovieService = addMovieService;
             _qualityUpgradableSpecification = qualityUpgradableSpecification;
             _coverMapper = coverMapper;
 
@@ -107,7 +110,7 @@ namespace Radarr.Api.V3.Movies
 
         private int AddMovie(MovieResource moviesResource)
         {
-            var movie = _moviesService.AddMovie(moviesResource.ToModel());
+            var movie = _addMovieService.AddMovie(moviesResource.ToModel());
 
             return movie.Id;
         }
