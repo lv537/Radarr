@@ -136,7 +136,7 @@ namespace NzbDrone.Core.Movies
                 _logger.Info(ex, "Unable to communicate with Mappings Server.");
             }
 
-            _movieService.UpdateMovie(new List<Movie> { movie });
+            _movieService.UpdateMovie(new List<Movie> { movie }, true);
 
             try
             {

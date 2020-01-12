@@ -110,16 +110,7 @@ namespace NzbDrone.Core.Organizer
         {
             Ensure.That(extension, () => extension).IsNotNullOrWhiteSpace();
 
-            var path = "";
-
-            if (movie.PathState > 0)
-            {
-                path = movie.Path;
-            }
-            else
-            {
-                path = BuildMoviePath(movie);
-            }
+            var path = BuildMoviePath(movie);
 
             return Path.Combine(path, fileName + extension);
         }

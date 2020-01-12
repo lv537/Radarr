@@ -41,7 +41,6 @@ namespace NzbDrone.Core.Movies
         public List<Actor> Actors { get; set; }
         public string Certification { get; set; }
         public string RootFolderPath { get; set; }
-        public MoviePathState PathState { get; set; }
         public DateTime Added { get; set; }
         public DateTime? InCinemas { get; set; }
         public DateTime? PhysicalRelease { get; set; }
@@ -153,7 +152,6 @@ namespace NzbDrone.Core.Movies
 
             Path = otherMovie.Path;
             ProfileId = otherMovie.ProfileId;
-            PathState = otherMovie.PathState;
 
             Monitored = otherMovie.Monitored;
             MinimumAvailability = otherMovie.MinimumAvailability;
@@ -162,12 +160,5 @@ namespace NzbDrone.Core.Movies
             Tags = otherMovie.Tags;
             AddOptions = otherMovie.AddOptions;
         }
-    }
-
-    public enum MoviePathState
-    {
-        Dynamic,
-        StaticOnce,
-        Static,
     }
 }

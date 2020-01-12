@@ -206,7 +206,7 @@ namespace NzbDrone.Core.NetImport
                 }
             }
 
-            _movieService.UpdateMovie(moviesToUpdate);
+            _movieService.UpdateMovie(moviesToUpdate, true);
         }
     }
 }
